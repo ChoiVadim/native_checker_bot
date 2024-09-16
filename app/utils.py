@@ -2,6 +2,7 @@ import time
 import json
 
 import openai
+
 from app.config import Config
 
 
@@ -26,7 +27,6 @@ class AssistantManager:
                 name=name, instructions=instructions, tools=tools, model=self.model
             )
             self.assistant = assistant_obj
-            print(f"AssisID:::: {self.assistant.id}")
 
         return self.assistant.id
 
@@ -34,7 +34,6 @@ class AssistantManager:
         if not self.thread:
             thread_obj = self.client.beta.threads.create()
             self.thread = thread_obj
-            print(f"ThreadID::: {self.thread.id}")
 
         return self.thread.id
 
@@ -107,6 +106,15 @@ class AssistantManager:
         )
         print(f"Run-Steps::: {run_steps}")
         return run_steps.data
+
+    def text_to_speech(self, text):
+        response = self.client.audio.speech.create(
+            model="tts-1", voice="nova", input=text
+        )
+
+        # Save the audio content as an MP3 file locally (optional)
+        with open("speech.mp3", "wb") as mp3_file:
+            mp3_file.write(response.content)
 
 
 en_assistant = AssistantManager()

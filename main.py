@@ -6,6 +6,7 @@ from app.config import Config
 
 
 async def main():
+    print("Bot started!")
     bot = Bot(Config.bot_token)
     dp = Dispatcher()
     dp.include_router(router)
