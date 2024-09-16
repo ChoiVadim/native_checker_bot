@@ -1,5 +1,6 @@
 from enum import Enum
 
+import asyncio
 from aiogram import F, Router
 from aiogram.types import Message
 from aiogram.filters import CommandStart
@@ -44,11 +45,11 @@ async def cmd_korean(message: Message):
 async def send_message(message: Message):
     if language == Language.ENGLISH:
         en_assistant.add_message_to_thread("user", message.text)
-        en_assistant.run_assistant()
-        en_assistant.wait_for_completion()
+        await asyncio.to_thread(en_assistant.run_assistant)
+        await asyncio.to_thread(en_assistant.wait_for_completion)
         await message.answer(en_assistant.get_response())
     elif language == Language.KOREAN:
         kr_assistant.add_message_to_thread("user", message.text)
-        kr_assistant.run_assistant()
-        kr_assistant.wait_for_completion()
+        await asyncio.to_thread(kr_assistant.run_assistant)
+        await asyncio.to_thread(kr_assistant.wait_for_completion)
         await message.answer(kr_assistant.get_response())
