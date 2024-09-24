@@ -15,3 +15,11 @@ main_kb = ReplyKeyboardMarkup(
         ],
     ],
 )
+
+inline_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🔊", callback_data="get_audio"),
+        ],
+    ],
+)
