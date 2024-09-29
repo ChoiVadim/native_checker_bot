@@ -5,7 +5,7 @@ from aiogram.types import (
     InlineKeyboardMarkup,
 )
 
-main_kb = ReplyKeyboardMarkup(
+language_kb = ReplyKeyboardMarkup(
     resize_keyboard=True,
     input_field_placeholder="Enter a message!",
     keyboard=[
@@ -16,10 +16,20 @@ main_kb = ReplyKeyboardMarkup(
     ],
 )
 
-inline_kb = InlineKeyboardMarkup(
+en_inline_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text="🔊", callback_data="get_audio"),
+            InlineKeyboardButton(text="🇰🇷", callback_data="to_korean"),
+        ],
+    ],
+)
+
+kr_inline_kb = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🔊", callback_data="get_audio"),
+            InlineKeyboardButton(text="🇺🇸", callback_data="to_english"),
         ],
     ],
 )

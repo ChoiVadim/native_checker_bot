@@ -106,7 +106,7 @@ class AssistantManager:
         )
         print(f"Run-Steps::: {run_steps}")
         return run_steps.data
-
+    
     def text_to_speech(self, text):
         response = self.client.audio.speech.create(
             model="tts-1", voice="nova", input=text
