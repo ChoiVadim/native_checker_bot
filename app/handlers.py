@@ -8,8 +8,8 @@ from aiogram.fsm.context import FSMContext
 
 from app.utils import kr_assistant, en_assistant
 from app.keyboards import language_kb, en_inline_kb, kr_inline_kb
-from app.helpers import check_request_limit
-from app.config import Config
+from app.helpers import check_request_limit, get_request_limit
+from app.constants import start_text, buy_text
 
 router = Router()
 
@@ -21,17 +21,7 @@ class Language(Enum):
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
-    text = f"""Hi there👋
-I`m here to help tidy up your messages to make them sound more natural and polished.
-Just send one over, and I'll do my best to refine it for you! If you need translations, I can help with various languages too!
-
-You can make up to {Config.REQUEST_LIMIT} requests within {int(Config.RESET_TIME.seconds // 60)} minutes.
-    
-Use /language to set your default language.
-Use /buy to buy unlimited requests.
-    
-To get more requests, buy me a coffee 🤎☕
-"""
+    text = start_text
     await message.answer_photo(
         photo=FSInputFile("app/assets/logo.jpg"),
         reply_markup=language_kb,
@@ -49,21 +39,19 @@ async def cmd_start(message: Message):
 
 @router.message(Command("buy"))
 async def cmd_but(message: Message):
-    caption = r"""💵 Unlock Unlimited Requests\! 💵
-
-Gain access to unlimited requests by simply sending $10\. Once your payment is confirmed, I\'ll provide you with full, unrestricted access\.
-
-📋 Payment Details\:
-||Woori Bank\: 1002\-261\-902499||
-||NongHyup Bank\:  356\-1428\-4014\-13||
-||Hana Bank\:  149\-910332\-10507||
-
-Feel free to reach out if you have any questions\. Thank you\!
-"""
+    caption = buy_text
     await message.answer_photo(
         photo=FSInputFile("app/assets/buy.jpg"),
         caption=caption,
         parse_mode="MarkdownV2",
+    )
+
+
+@router.message(Command("limit"))
+async def cmd_limit(message: Message):
+    request_count, wait_time, request_limit = get_request_limit(message.from_user.id)
+    await message.answer(
+        f"Your request limit is {request_limit}.\nYou have {request_count} requests.\n\nIf you want to buy more requests, use /buy."
     )
 
 
@@ -99,7 +87,7 @@ async def send_audio_message(bot: Bot | None, chat_id: int, text: str):
 
 @router.message()
 async def send_message(message: Message, state: FSMContext):
-    request_limit, wait_time = check_request_limit(message.from_user.id)
+    _, wait_time, _ = check_request_limit(message.from_user.id)
 
     if wait_time:
         await message.answer(f"Too many requests. Please wait {wait_time}.")
@@ -119,7 +107,7 @@ async def send_message(message: Message, state: FSMContext):
 
 @router.callback_query(F.data == "get_audio")
 async def get_audio(callback_query: CallbackQuery):
-    request_limit, wait_time = check_request_limit(callback_query.from_user.id)
+    _, wait_time, _ = check_request_limit(callback_query.from_user.id)
 
     if wait_time:
         await callback_query.answer(f"Too many requests. Please wait {wait_time}.")
@@ -133,7 +121,7 @@ async def get_audio(callback_query: CallbackQuery):
 
 @router.callback_query(F.data == "to_korean")
 async def to_korean(callback_query: CallbackQuery):
-    request_limit, wait_time = check_request_limit(callback_query.from_user.id)
+    _, wait_time, _ = check_request_limit(callback_query.from_user.id)
 
     if wait_time:
         await callback_query.answer(f"Too many requests. Please wait {wait_time}.")
@@ -150,7 +138,7 @@ async def to_korean(callback_query: CallbackQuery):
 
 @router.callback_query(F.data == "to_english")
 async def to_english(callback_query: CallbackQuery):
-    request_limit, wait_time = check_request_limit(callback_query.from_user.id)
+    _, wait_time, _ = check_request_limit(callback_query.from_user.id)
 
     if wait_time:
         await callback_query.answer(f"Too many requests. Please wait {wait_time}.")
