@@ -28,6 +28,7 @@ Just send one over, and I'll do my best to refine it for you! If you need transl
 You can make up to {Config.REQUEST_LIMIT} requests within {int(Config.RESET_TIME.seconds // 60)} minutes.
     
 Use /language to set your default language.
+Use /buy to buy unlimited requests.
     
 To get more requests, buy me a coffee 🤎☕
 """
@@ -44,6 +45,26 @@ async def cmd_start(message: Message):
     await asyncio.sleep(10)
     await msg.delete()
     await message.delete()
+
+
+@router.message(Command("buy"))
+async def cmd_but(message: Message):
+    caption = r"""💵 Unlock Unlimited Requests\! 💵
+
+Gain access to unlimited requests by simply sending $10\. Once your payment is confirmed, I\'ll provide you with full, unrestricted access\.
+
+📋 Payment Details\:
+||Woori Bank\: 1002\-261\-902499||
+||NongHyup Bank\:  356\-1428\-4014\-13||
+||Hana Bank\:  149\-910332\-10507||
+
+Feel free to reach out if you have any questions\. Thank you\!
+"""
+    await message.answer_photo(
+        photo=FSInputFile("app/assets/buy.jpg"),
+        caption=caption,
+        parse_mode="MarkdownV2",
+    )
 
 
 @router.message(F.text == "English")
